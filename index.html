@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Proctor Test</title>
+</head>
+<body>
+
+  <button id="startProctoringButton">Start exam with proctoring</button>
+
+  <script type="module">
+    window.APP_VERSION = '1.0.0'
+    import * as proctoring from 'https://sdk.web.proctor.constructor.app/proctoring.js'
+
+    const serverOrigin     = 'https://demo.proctor.constructor.app'
+    const integrationName  = 'digi-val-test'
+    const jwt              = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjMyMTM0IiwibGFzdE5hbWUiOiJTbWl0aCIsImZpcnN0TmFtZSI6IkpvaG4iLCJsYW5ndWFnZSI6ImVuIiwiYWNjb3VudElkIjoxMjMsImFjY291bnROYW1lIjoiQ29ycG9yYXRlIHVuaXZlcnNpdHkiLCJleGFtSWQiOiJhMzg3NTYyMyIsImNvdXJzZU5hbWUiOiJQaHlzaWNzIiwiZXhhbU5hbWUiOiJGaW5hbCB0ZXN0IiwiZHVyYXRpb24iOjEyMCwic2NoZWR1bGUiOmZhbHNlLCJwcm9jdG9yaW5nIjoib2ZmbGluZSIsImlkZW50aWZpY2F0aW9uIjoicGFzc3BvcnQiLCJzdGFydERhdGUiOiIyMDE4LTAzLTI3VDAwOjAwOjAwWiIsImVuZERhdGUiOiIyMDI4LTAzLTMwVDEyOjU1OjAwWiIsInNlc3Npb25JZCI6IjgyODMzMWJkYTAyNSIsInNlc3Npb25VcmwiOiJodHRwczovL2RpZ2lhc3Nlc3Mtbm9ucHJvZC5nY3AuZGlnaXZhbGl0c29sdXRpb25zLmNvbS9zdGFnaW5nLWRld2ViL2F1dGgvbG9naW4vc3RhZmYifQ.fake_signature'
+
+    async function startProctoring(serverOrigin, integrationName, jwt, theme, config) {
+      let proctoringSession = await proctoring
+        .init({ serverOrigin, integrationName, jwt, theme, ...config })
+        .catch(e => alert(`Proctoring SDK Init Error: ${e.message} ${e.cause}`))
+
+      proctoringSession.examStarted
+        .then(() => console.log('proctoring: exam started'))
+        .then(() => {
+          hideInitialDom()
+          showExamContent()
+        })
+
+      proctoringSession.examFinished.then(() => {
+        hideExamContent()
+      })
+
+      proctoringSession.videoUploaded.then(() => {
+        console.log('proctoring: video uploaded')
+      })
+    }
+
+    async function handleStartProctoringButton() {
+      let theme = 'default'
+      let config = {}
+      await startProctoring(serverOrigin, integrationName, jwt, theme, config)
+    }
+
+    document
+      .getElementById('startProctoringButton')
+      .addEventListener('click', handleStartProctoringButton)
+
+    function hideInitialDom() {
+      document.getElementById('startProctoringButton').style.display = 'none'
+    }
+
+    function showExamContent() {
+      document.getElementById('examContent').style.display = 'block'
+    }
+
+    function hideExamContent() {
+      document.getElementById('examContent').style.display = 'none'
+    }
+  </script>
+
+  <div id="examContent" style="display:none">
+    <h2>Exam is live - good luck!</h2>
+  </div>
+
+</body>
+</html>
