@@ -2,19 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Proctor Test</title>
+  <title>Proctor Test 1</title>
 </head>
 <body>
 
-  <button id="startProctoringButton">Start exam with proctoring</button>
+  <button id="startProctoringButton">Start exam with proctoring 1</button>
 
   <script type="module">
     window.APP_VERSION = '1.0.0'
     import * as proctoring from 'https://sdk.web.proctor.constructor.app/proctoring.js'
 
-    const serverOrigin     = 'https://demo.proctor.constructor.app'
-    const integrationName  = 'digi-val-test'
-    const jwt              = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjMyMTM0IiwibGFzdE5hbWUiOiJTbWl0aCIsImZpcnN0TmFtZSI6IkpvaG4iLCJsYW5ndWFnZSI6ImVuIiwiYWNjb3VudElkIjoxMjMsImFjY291bnROYW1lIjoiQ29ycG9yYXRlIHVuaXZlcnNpdHkiLCJleGFtSWQiOiJhMzg3NTYyMyIsImNvdXJzZU5hbWUiOiJQaHlzaWNzIiwiZXhhbU5hbWUiOiJGaW5hbCB0ZXN0IiwiZHVyYXRpb24iOjEyMCwic2NoZWR1bGUiOmZhbHNlLCJwcm9jdG9yaW5nIjoib2ZmbGluZSIsImlkZW50aWZpY2F0aW9uIjoicGFzc3BvcnQiLCJzdGFydERhdGUiOiIyMDE4LTAzLTI3VDAwOjAwOjAwWiIsImVuZERhdGUiOiIyMDI4LTAzLTMwVDEyOjU1OjAwWiIsInNlc3Npb25JZCI6IjgyODMzMWJkYTAyNSIsInNlc3Npb25VcmwiOiJodHRwczovL2RpZ2lhc3Nlc3Mtbm9ucHJvZC5nY3AuZGlnaXZhbGl0c29sdXRpb25zLmNvbS9zdGFnaW5nLWRld2ViL2F1dGgvbG9naW4vc3RhZmYifQ.fake_signature'
+    // ── Swap these 3 values ──────────────────────────────
+    const serverOrigin     = 'https://demo.proctor.constructor.app'   // from Constructor team
+    const integrationName  = 'digi-val-test'        // from Constructor team
+    const jwt              ='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjMyMTM0IiwibGFzdE5hbWUiOiJTbWl0aCIsImZpcnN0TmFtZSI6IkpvaG4iLCJsYW5ndWFnZSI6ImVuIiwiYWNjb3VudElkIjoxMjMsImFjY291bnROYW1lIjoiQ29ycG9yYXRlIHVuaXZlcnNpdHkiLCJleGFtSWQiOiJhMzg3NTYyMyIsImNvdXJzZU5hbWUiOiJQaHlzaWNzIiwiZXhhbU5hbWUiOiJGaW5hbCB0ZXN0IiwiZHVyYXRpb24iOjEyMCwic2NoZWR1bGUiOmZhbHNlLCJwcm9jdG9yaW5nIjoib2ZmbGluZSIsImlkZW50aWZpY2F0aW9uIjoicGFzc3BvcnQiLCJzdGFydERhdGUiOiIyMDE4LTAzLTI3VDAwOjAwOjAwWiIsImVuZERhdGUiOiIyMDI4LTAzLTMwVDEyOjU1OjAwWiIsInNlc3Npb25JZCI6IjgyODMzMWJkYTAyNSIsInNlc3Npb25VcmwiOiJodHRwczovL2RpZ2lhc3Nlc3Mtbm9ucHJvZC5nY3AuZGlnaXZhbGl0c29sdXRpb25zLmNvbS9zdGFnaW5nLWRld2ViL2F1dGgvbG9naW4vc3RhZmYifQ.ZYeGtebQU7-Vw9yDrxddi1l1Tq3yurdGcEWbYkG0Hvc'
+    // ────────────────────────────────────────────────────
 
     async function startProctoring(serverOrigin, integrationName, jwt, theme, config) {
       let proctoringSession = await proctoring
@@ -61,7 +63,8 @@
   </script>
 
   <div id="examContent" style="display:none">
-    <h2>Exam is live - good luck!</h2>
+    <h2>Exam is live — good luck!</h2>
+    <!-- your exam content here -->
   </div>
 
 </body>
