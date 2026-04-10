@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Proctor Test 1</title>
+  </head>
+
+  <body>
+    <!-- CONFIG UI -->
+
+    <div>
+      <label>Identification:</label>
+      <select id="identification">
+        <option value="passport">passport</option>
+        <option value="face">face</option>
+        <option value="face_and_passport" selected>face_and_passport</option>
+        <option value="skip">skip</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Proctoring:</label>
+      <select id="proctoring">
+        <option value="online" selected>online</option>
+        <option value="offline">offline</option>
+        <option value="auto">auto</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Auxiliary Camera:</label>
+      <input type="checkbox" id="auxiliaryCamera" />
+    </div>
+
+    <div>
+      <label>Auxiliary Camera Mode:</label>
+      <select id="auxiliaryCameraMode">
+        <option value="photo" selected>photo</option>
+        <option value="video">video</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Secure Browser:</label>
+      <input type="checkbox" id="secureBrowser" />
+    </div>
+
+    <div>
+      <label>Secure Browser Level:</label>
+      <select id="secureBrowserLevel">
+        <option value="basic">basic</option>
+        <option value="medium">medium</option>
+        <option value="high" selected>high</option>
+      </select>
+    </div>
+
+    <br />
+
+    <button id="startProctoringButton">Start exam with proctoring 1</button>
+
+    <script type="module" src="./proctor.js"></script>
+
+    <div id="examContent" style="display: none">
+      <h2>Exam is live — good luck!</h2>
+    </div>
+  </body>
+</html>
