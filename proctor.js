@@ -14,12 +14,25 @@ function generateId(len = 8) {
   return crypto.randomUUID().replace(/-/g, "").slice(0, len);
 }
 
+function randomName(length = 6) {
+  const vowels = "aeiou";
+  const consonants = "bcdfghjklmnpqrstvwxyz";
+
+  let name = "";
+  for (let i = 0; i < length; i++) {
+    const chars = i % 2 === 0 ? consonants : vowels;
+    name += chars[Math.floor(Math.random() * chars.length)];
+  }
+
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
 function getUserData() {
   return {
     userId: generateId(7),
-    lastName: "lastname",
-    firstName: "firstname",
-    thirdName: "thirdname",
+    firstName: randomName(),
+    lastName: randomName(),
+    thirdName: randomName(),
     language: "en",
   };
 }
