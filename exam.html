@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DigiSecure Test Exam</title>
+    <style>
+      :root {
+        --primary: #6366f1;
+        --secondary: #4f46e5;
+        --danger: #ef4444;
+        --success: #22c55e;
+        --bg: #0f172a;
+        --card: #1e293b;
+        --text: #f8fafc;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        overflow: hidden;
+      }
+
+      .container {
+        background-color: var(--card);
+        padding: 3rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(to right, #818cf8, #c084fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      p {
+        color: #94a3b8;
+        margin-bottom: 2rem;
+      }
+
+      .button-group {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      button {
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 0.75rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .btn-start {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.4);
+      }
+
+      .btn-start:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.5);
+      }
+
+      .btn-stop {
+        background: transparent;
+        color: var(--danger);
+        border: 2px solid var(--danger);
+      }
+
+      .btn-stop:hover {
+        background: var(--danger);
+        color: white;
+      }
+
+      .status-badge {
+        display: inline-block;
+        margin-top: 2rem;
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        background: rgba(255, 255, 255, 0.05);
+        color: #64748b;
+      }
+
+      /* Micro-animations */
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .active {
+        animation: pulse 2s infinite;
+        border-color: var(--success);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container" id="app">
+      <h1>DigiSecure Exam</h1>
+      <p>Simulation Portal for Native Bridge</p>
+
+      <div class="button-group">
+        <button class="btn-start" onclick="startExam()">
+          Start Secure Exam
+        </button>
+        <button class="btn-stop" onclick="stopExam()">End Exam session</button>
+      </div>
+
+      <div class="status-badge" id="status">Current Status: Idle</div>
+    </div>
+
+    <script>
+      function startExam() {
+        updateStatus("Attempting to lock device...", "var(--primary)");
+
+        // Native iOS Bridge Call
+        if (
+          window.webkit &&
+          window.webkit.messageHandlers &&
+          window.webkit.messageHandlers.startExam
+        ) {
+          window.webkit.messageHandlers.startExam.postMessage(null);
+          updateStatus("Secure Lock Requested", "var(--success)");
+          document.getElementById("app").classList.add("active");
+        } else {
+          updateStatus("Native Bridge Not Supported", "var(--danger)");
+          console.warn("startExam: webkit interface not found");
+        }
+      }
+
+      function stopExam() {
+        updateStatus("Releasing device...", "var(--primary)");
+
+        // Native iOS Bridge Call
+        if (
+          window.webkit &&
+          window.webkit.messageHandlers &&
+          window.webkit.messageHandlers.stopExam
+        ) {
+          window.webkit.messageHandlers.stopExam.postMessage(null);
+          updateStatus("Unlock Requested", "var(--primary)");
+          document.getElementById("app").classList.remove("active");
+        } else {
+          updateStatus("Native Bridge Not Supported", "var(--danger)");
+          console.warn("stopExam: webkit interface not found");
+        }
+      }
+
+      function updateStatus(msg, color) {
+        const status = document.getElementById("status");
+        status.innerText = "Current Status: " + msg;
+        status.style.color = color;
+      }
+    </script>
+  </body>
+</html>
