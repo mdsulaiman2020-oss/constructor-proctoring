@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Launch DigiAssess Exam</title>
+
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial,
+          sans-serif;
+        background: #f5f7fb;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        text-align: center;
+      }
+
+      .container {
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        max-width: 420px;
+        width: 90%;
+      }
+
+      h2 {
+        margin-bottom: 10px;
+        color: #222;
+      }
+
+      p {
+        color: #666;
+        font-size: 14px;
+      }
+
+      .btn {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 12px 20px;
+        background: #2563eb;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 500;
+      }
+
+      .btn:hover {
+        background: #1d4ed8;
+      }
+
+      .secondary {
+        margin-top: 15px;
+        display: block;
+        font-size: 13px;
+        color: #2563eb;
+      }
+
+      .warning {
+        margin-top: 15px;
+        color: #d97706;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Launching Secure Browser...</h2>
+      <p>
+        Please wait while we open Secure Browser. If not opened, then click on
+        the button below.
+      </p>
+
+      <a id="seb-launch-btn" class="btn" href="#"> Open Secure Browser </a>
+
+      <a id="seb-download-btn" class="secondary" href="#"> Download Config </a>
+
+      <div id="warning" class="warning" style="display: none">
+        Secure Browser not detected. Please install it first.
+      </div>
+    </div>
+
+    <script>
+      // ── SEB Configuration ─────────────────────────────────────
+      // Single source of truth for the SEB config URL.
+      const SEB_CONFIG_URL =
+        "seb://ats-prod-da-seb-config-183443062410.me-central2.run.app/seb-conf/SEBClientSettings_ATS.seb";
+
+      // HTTPS variant for direct download fallback
+      const SEB_CONFIG_DOWNLOAD_URL =
+        "https://ats-prod-da-seb-config-183443062410.me-central2.run.app/seb-conf/SEBClientSettings_ATS.seb";
+      // ─────────────────────────────────────────────────────────
+
+      // Wire up links
+      document.getElementById("seb-launch-btn").href = SEB_CONFIG_URL;
+      document.getElementById("seb-download-btn").href =
+        SEB_CONFIG_DOWNLOAD_URL;
+
+      let sebOpened = false;
+
+      // Detect if app switch happened (SEB likely opened)
+      window.addEventListener("blur", () => {
+        sebOpened = true;
+      });
+
+      // Try auto-launch
+      setTimeout(() => {
+        window.location.href = SEB_CONFIG_URL;
+      }, 800);
+
+      // Show warning if not opened
+      setTimeout(() => {
+        if (!sebOpened) {
+          document.getElementById("warning").style.display = "block";
+        }
+      }, 3000);
+    </script>
+  </body>
+</html>
