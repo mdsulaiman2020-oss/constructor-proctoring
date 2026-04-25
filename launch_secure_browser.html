@@ -95,29 +95,22 @@
         "https://ats-prod-da-seb-config-183443062410.me-central2.run.app/seb-conf/SEBClientSettings_ATS.seb";
       // ─────────────────────────────────────────────────────────
 
-      // Wire up links
-      document.getElementById("seb-launch-btn").href = SEB_CONFIG_URL;
+      // Wire up download link (HTTPS, not seb://)
       document.getElementById("seb-download-btn").href =
         SEB_CONFIG_DOWNLOAD_URL;
 
-      let sebOpened = false;
-
-      // Detect if app switch happened (SEB likely opened)
-      window.addEventListener("blur", () => {
-        sebOpened = true;
+      // Button click → launch SEB
+      document.getElementById("seb-launch-btn").addEventListener("click", (e) => {
+        e.preventDefault();
+        window.location.href = SEB_CONFIG_URL;
       });
 
-      // Try auto-launch
+      // Show warning after delay if the page is still visible (SEB didn't take over)
       setTimeout(() => {
-        window.location.href = SEB_CONFIG_URL;
-      }, 800);
-
-      // Show warning if not opened
-      setTimeout(() => {
-        if (!sebOpened) {
+        if (!document.hidden) {
           document.getElementById("warning").style.display = "block";
         }
-      }, 3000);
+      }, 4000);
     </script>
   </body>
 </html>
