@@ -12,10 +12,12 @@
           sans-serif;
         background: #f5f7fb;
         margin: 0;
+        padding: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 100vh;
+        min-height: 100vh;
+        box-sizing: border-box;
         text-align: center;
       }
 
@@ -78,53 +80,79 @@
       // ── SEB Configuration ─────────────────────────────────────
       // Use sebs:// — the HTTPS-equivalent SEB protocol scheme.
       // Cloud Run endpoints are HTTPS-only; seb:// maps to HTTP.
-      const SEB_CONFIG_URL =
+      var SEB_CONFIG_URL =
         "sebs://ats-prod-da-seb-config-183443062410.me-central2.run.app/seb-conf/SEBClientSettings_ATS.seb";
 
       // HTTPS variant for direct download fallback
-      const SEB_CONFIG_DOWNLOAD_URL =
+      var SEB_CONFIG_DOWNLOAD_URL =
         "https://ats-prod-da-seb-config-183443062410.me-central2.run.app/seb-conf/SEBClientSettings_ATS.seb";
       // ─────────────────────────────────────────────────────────
 
       // ── Launch guard ───────────────────────────────────────────
-      // On iPad Safari, after handing off to SEB via the URL
-      // scheme, Safari reloads this page. The auto-launch then
-      // fires AGAIN, sending the config to SEB a second time.
-      // SEB rejects it with "Loading New Settings not allowed".
+      // Chrome on iPad clears sessionStorage during URL scheme
+      // navigation and page reloads. Use localStorage with a
+      // time-based cooldown instead — it persists across reloads,
+      // back-navigation, and app switches.
       //
-      // We use sessionStorage to ensure the auto-launch only
-      // fires once. sessionStorage is scoped to the tab and
-      // cleared when the tab is closed, so opening a new tab
-      // will still auto-launch.
-      var STORAGE_KEY = "seb_launch_attempted";
+      // Cooldown period: 15 seconds. This prevents duplicate
+      // invocations while still allowing the user to re-launch
+      // after a reasonable wait if SEB didn't open.
+      var STORAGE_KEY = "seb_launch_ts";
+      var LAUNCH_COOLDOWN_MS = 15000;
 
       function launchSEB() {
-        sessionStorage.setItem(STORAGE_KEY, Date.now().toString());
+        if (isInCooldown()) return false;
+        try {
+          localStorage.setItem(STORAGE_KEY, Date.now().toString());
+        } catch (e) {
+          // localStorage may be unavailable in some browsers
+        }
         window.location.href = SEB_CONFIG_URL;
+        return true;
       }
 
-      function hasAlreadyLaunched() {
-        return sessionStorage.getItem(STORAGE_KEY) !== null;
+      function isInCooldown() {
+        try {
+          var lastLaunch = localStorage.getItem(STORAGE_KEY);
+          if (!lastLaunch) return false;
+          return (Date.now() - parseInt(lastLaunch, 10)) < LAUNCH_COOLDOWN_MS;
+        } catch (e) {
+          return false;
+        }
       }
+
+      // ── Platform detection ─────────────────────────────────────
+      // On mobile/tablet (iPad, iPhone, Android), do NOT
+      // auto-launch. The browser stays in the foreground during
+      // URL scheme handoff and may reload the page, causing SEB
+      // to receive the config multiple times.
+      // On desktop (Windows, macOS), SEB takes over immediately
+      // so auto-launch is safe.
+      var isMobileOrTablet = /iPad|iPhone|iPod|Android/i.test(navigator.userAgent) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      // ─────────────────────────────────────────────────────────
 
       // Wire up download link
       document.getElementById("seb-download-btn").href =
         SEB_CONFIG_DOWNLOAD_URL;
 
-      // Wire up launch button — always allows manual retry by
-      // clearing the guard first
+      // Wire up launch button
       var launchBtn = document.getElementById("seb-launch-btn");
       launchBtn.addEventListener("click", function (e) {
         e.preventDefault();
-        sessionStorage.removeItem(STORAGE_KEY);
+        // Clear cooldown for intentional user taps
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
         launchSEB();
       });
 
-      // Auto-launch ONLY if we haven't already tried in this tab.
-      // This prevents the duplicate invocation on iPad Safari
-      // page reloads after URL scheme handoff.
-      if (!hasAlreadyLaunched()) {
+      // Auto-launch only on desktop
+      if (!isMobileOrTablet) {
         launchSEB();
+      } else {
+        // On mobile/tablet, update text to prompt the user to tap
+        document.querySelector("h2").textContent = "Open Secure Browser";
+        document.querySelector("p").textContent =
+          "Tap the button below to launch Safe Exam Browser.";
       }
     </script>
   </body>
