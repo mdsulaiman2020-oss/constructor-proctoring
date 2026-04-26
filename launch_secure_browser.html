@@ -59,12 +59,6 @@
         font-size: 13px;
         color: #2563eb;
       }
-
-      .warning {
-        margin-top: 15px;
-        color: #d97706;
-        font-size: 13px;
-      }
     </style>
   </head>
   <body>
@@ -78,19 +72,12 @@
       <a id="seb-launch-btn" class="btn" href="#"> Open Secure Browser </a>
 
       <a id="seb-download-btn" class="secondary" href="#"> Download Config </a>
-
-      <div id="warning" class="warning" style="display: none">
-        Secure Browser not detected. Please install it first.
-      </div>
     </div>
 
     <script>
       // ── SEB Configuration ─────────────────────────────────────
-      // Use sebs:// (not seb://) because the Cloud Run server
-      // requires HTTPS.  seb:// maps to HTTP which causes SEB to
-      // fail with "Loading New Settings not allowed" since the
-      // HTTP request is redirected or rejected by the HTTPS-only
-      // Cloud Run endpoint.
+      // Use sebs:// — the HTTPS-equivalent SEB protocol scheme.
+      // Cloud Run endpoints are HTTPS-only; seb:// maps to HTTP.
       const SEB_CONFIG_URL =
         "sebs://ats-prod-da-seb-config-183443062410.me-central2.run.app/seb-conf/SEBClientSettings_ATS.seb";
 
@@ -99,25 +86,46 @@
         "https://ats-prod-da-seb-config-183443062410.me-central2.run.app/seb-conf/SEBClientSettings_ATS.seb";
       // ─────────────────────────────────────────────────────────
 
-      // Wire up download link (HTTPS, not sebs://)
+      // ── Launch guard ───────────────────────────────────────────
+      // On iPad Safari, after handing off to SEB via the URL
+      // scheme, Safari reloads this page. The auto-launch then
+      // fires AGAIN, sending the config to SEB a second time.
+      // SEB rejects it with "Loading New Settings not allowed".
+      //
+      // We use sessionStorage to ensure the auto-launch only
+      // fires once. sessionStorage is scoped to the tab and
+      // cleared when the tab is closed, so opening a new tab
+      // will still auto-launch.
+      var STORAGE_KEY = "seb_launch_attempted";
+
+      function launchSEB() {
+        sessionStorage.setItem(STORAGE_KEY, Date.now().toString());
+        window.location.href = SEB_CONFIG_URL;
+      }
+
+      function hasAlreadyLaunched() {
+        return sessionStorage.getItem(STORAGE_KEY) !== null;
+      }
+
+      // Wire up download link
       document.getElementById("seb-download-btn").href =
         SEB_CONFIG_DOWNLOAD_URL;
 
-      // Button click → launch SEB
-      document.getElementById("seb-launch-btn").addEventListener("click", (e) => {
+      // Wire up launch button — always allows manual retry by
+      // clearing the guard first
+      var launchBtn = document.getElementById("seb-launch-btn");
+      launchBtn.addEventListener("click", function (e) {
         e.preventDefault();
-        window.location.href = SEB_CONFIG_URL;
+        sessionStorage.removeItem(STORAGE_KEY);
+        launchSEB();
       });
 
-      // Auto-launch on page load
-      window.location.href = SEB_CONFIG_URL;
-
-      // Show warning after delay if the page is still visible (SEB didn't take over)
-      setTimeout(() => {
-        if (!document.hidden) {
-          document.getElementById("warning").style.display = "block";
-        }
-      }, 4000);
+      // Auto-launch ONLY if we haven't already tried in this tab.
+      // This prevents the duplicate invocation on iPad Safari
+      // page reloads after URL scheme handoff.
+      if (!hasAlreadyLaunched()) {
+        launchSEB();
+      }
     </script>
   </body>
 </html>
