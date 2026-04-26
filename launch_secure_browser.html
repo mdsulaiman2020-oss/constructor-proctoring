@@ -86,16 +86,20 @@
 
     <script>
       // ── SEB Configuration ─────────────────────────────────────
-      // Single source of truth for the SEB config URL.
+      // Use sebs:// (not seb://) because the Cloud Run server
+      // requires HTTPS.  seb:// maps to HTTP which causes SEB to
+      // fail with "Loading New Settings not allowed" since the
+      // HTTP request is redirected or rejected by the HTTPS-only
+      // Cloud Run endpoint.
       const SEB_CONFIG_URL =
-        "seb://ats-prod-da-seb-config-183443062410.me-central2.run.app/seb-conf/SEBClientSettings_ATS.seb";
+        "sebs://ats-prod-da-seb-config-183443062410.me-central2.run.app/seb-conf/SEBClientSettings_ATS.seb";
 
       // HTTPS variant for direct download fallback
       const SEB_CONFIG_DOWNLOAD_URL =
         "https://ats-prod-da-seb-config-183443062410.me-central2.run.app/seb-conf/SEBClientSettings_ATS.seb";
       // ─────────────────────────────────────────────────────────
 
-      // Wire up download link (HTTPS, not seb://)
+      // Wire up download link (HTTPS, not sebs://)
       document.getElementById("seb-download-btn").href =
         SEB_CONFIG_DOWNLOAD_URL;
 
@@ -104,6 +108,9 @@
         e.preventDefault();
         window.location.href = SEB_CONFIG_URL;
       });
+
+      // Auto-launch on page load
+      window.location.href = SEB_CONFIG_URL;
 
       // Show warning after delay if the page is still visible (SEB didn't take over)
       setTimeout(() => {
